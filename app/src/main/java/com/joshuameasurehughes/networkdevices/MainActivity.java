@@ -3,6 +3,7 @@ package com.joshuameasurehughes.networkdevices;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
@@ -41,7 +42,9 @@ public class MainActivity extends AppCompatActivity {
         tv.setMovementMethod(ScrollingMovementMethod.getInstance());
 
         final String TAG = "TESTING";
-        final String[] res = new String[1];
+        final String[] result = new String[1];
+
+        Resources res = getResources();
 
         new AsyncTask<Integer, Void, Void>() {
             @Override
@@ -49,8 +52,8 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     //todo TAG
                     //Log.d(TAG,
-                    res[0] = SSHCommand.executeRemoteCommand("root", "949273", "192.168.1.30", 22);
-                    runOnUiThread(() -> tv.append(res[0]));
+                    result[0] = SSHCommand.executeRemoteCommand(getString(R.string.username_ap), getString(R.string.password_ap), getString(R.string.host_ap), res.getInteger(R.integer.port));
+                    runOnUiThread(() -> tv.append(result[0]));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

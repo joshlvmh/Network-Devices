@@ -1,0 +1,9 @@
+<resources>
+    <string name="username_ap">root</string>
+    <string name="password_ap">949273</string>
+    <string name="host_ap">192.168.1.30</string>
+    <string name="host_nas">192.168.1.85</string>
+    <string name="username_nas">pi</string>
+    <string name="password_nas">94927365649t*</string>
+    <integer name="port">22</integer>
+</resources>
