@@ -37,22 +37,45 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @SuppressLint("StaticFieldLeak")
-    public void onBtnClick (View view) {
+    public void onBtnClick (View view) throws RuntimeException {
         TextView tv = findViewById(R.id.textHello);
         tv.setMovementMethod(ScrollingMovementMethod.getInstance());
+
+        String username;
+        String password;
+        String host;
+
+        int pos = spinner.getSelectedItemPosition();
+        switch (pos) {
+            case 0:
+                username = getString(R.string.username_ap);
+                password = getString(R.string.password_ap);
+                host = getString(R.string.host_ap);
+                break;
+            case 1:
+                username = getString(R.string.username_nas);
+                password = getString(R.string.password_nas);
+                host = getString(R.string.host_nas);
+                break;
+            default:
+                throw new RuntimeException("spinner needs to be set");
+        }
 
         final String TAG = "TESTING";
         final String[] result = new String[1];
 
         Resources res = getResources();
 
+        String finalUsername = username;
+        String finalPassword = password;
+        String finalHost = host;
         new AsyncTask<Integer, Void, Void>() {
             @Override
             protected Void doInBackground(Integer... params) {
                 try {
                     //todo TAG
                     //Log.d(TAG,
-                    result[0] = SSHCommand.executeRemoteCommand(getString(R.string.username_ap), getString(R.string.password_ap), getString(R.string.host_ap), res.getInteger(R.integer.port));
+                    result[0] = SSHCommand.executeRemoteCommand(finalUsername, finalPassword, finalHost, res.getInteger(R.integer.port));
                     runOnUiThread(() -> tv.append(result[0]));
                 } catch (Exception e) {
                     e.printStackTrace();
