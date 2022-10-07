@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Network Devices</string>
+    <string name="clear_button">Clear</string>
+    <string name="func_button">ls</string>
+</resources>
