@@ -74,7 +74,16 @@ public class SSHCommand {
         System.out.println("error: " + errorBuffer.toString("UTF-8"));
 
         channel.disconnect();
-        if (errorBuffer.toString("UTF-8")=="") return errorBuffer.toString("UTF-8");
+
+        if (command.equals("sudo halt")) { // Verify off
+            try {
+                session.connect();
+                return "Shutdown failed\n";
+            } catch (Exception e) {
+                return "Shutdown successful\n";
+            }
+        }
+        //if (errorBuffer.toString("UTF-8")=="") return errorBuffer.toString("UTF-8");
         return outputBuffer.toString("UTF-8");
     }
 }
