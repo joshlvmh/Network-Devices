@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     public void buttonClick (View view) {
         String command;
         switch(view.getTag().toString()) {
+            // todo reboot option
             case "clear":
                 clearScreen(view);
                 return;
