@@ -6,6 +6,7 @@ import com.jcraft.jsch.Session;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.net.ConnectException;
 import java.util.Properties;
 
 public class SSHCommand {
@@ -25,7 +26,12 @@ public class SSHCommand {
         prop.put("StrictHostKeyChecking", "no");
         session.setConfig(prop);
 
-        session.connect();
+        try {
+            session.connect();
+        } catch (Exception e) {
+            throw new ConnectException();
+        }
+
 
         // SSH Channel
         ChannelExec channel = (ChannelExec)

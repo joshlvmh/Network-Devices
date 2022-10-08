@@ -16,6 +16,7 @@ import android.widget.TextView;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.ConnectException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -102,6 +103,8 @@ public class MainActivity extends AppCompatActivity {
                     //Log.d(TAG,
                     result[0] = SSHCommand.executeRemoteCommand(finalUsername, finalPassword, finalHost, res.getInteger(R.integer.port), command);
                     runOnUiThread(() -> tv.append(result[0]));
+                } catch (java.net.ConnectException e) {
+                    runOnUiThread(() -> tv.append("Failed to connect!\n"));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
