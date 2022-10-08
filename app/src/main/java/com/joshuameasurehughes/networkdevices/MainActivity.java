@@ -7,15 +7,11 @@ import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.ConnectException;
 
 public class MainActivity extends AppCompatActivity {
@@ -29,23 +25,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-        spinner = (Spinner)findViewById(R.id.spinner1);
+        spinner = findViewById(R.id.spinner1);
         ArrayAdapter<String>adapter = new ArrayAdapter<>(MainActivity.this,
                 android.R.layout.simple_spinner_item,paths);
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
-    }
-
-    @SuppressLint("StaticFieldLeak")
-    public void onLeftClick (View view) throws RuntimeException {
-        String command = "./temp.sh";
-        buttonClick(view, command);
-    }
-
-    public void onRightClick (View view) {
-        String command = "sudo halt";
-        buttonClick(view, command);
     }
 
     public void clearScreen (View view) {
@@ -62,7 +47,25 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void buttonClick (View view, String command) {
+    public void buttonClick (View view) {
+        String command;
+        switch(view.getTag().toString()) {
+            case "clear":
+                clearScreen(view);
+                return;
+            case "temp":
+                command = "./temp.sh";
+                break;
+            case "shutdown":
+                command = "sudo halt";
+                break;
+            case "disk":
+                command = "df -H /dev/sda1";
+                break;
+            default:
+                throw new RuntimeException();
+        }
+
         TextView tv = findViewById(R.id.textHello);
         tv.setMovementMethod(ScrollingMovementMethod.getInstance());
 
@@ -86,47 +89,30 @@ public class MainActivity extends AppCompatActivity {
                 throw new RuntimeException("spinner needs to be set");
         }
 
-        final String TAG = "TESTING";
-        final String[] result = new String[1];
-
-        Resources res = getResources();
-
-        String finalUsername = username;
-        String finalPassword = password;
-        String finalHost = host;
-
-        new AsyncTask<Integer, Void, Void>() {
-            @Override
-            protected Void doInBackground(Integer... params) {
-                try {
-                    //todo TAG
-                    //Log.d(TAG,
-                    result[0] = SSHCommand.executeRemoteCommand(finalUsername, finalPassword, finalHost, res.getInteger(R.integer.port), command);
-                    runOnUiThread(() -> tv.append(result[0]));
-                } catch (java.net.ConnectException e) {
-                    runOnUiThread(() -> tv.append("Failed to connect!\n"));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
-        }.execute(1);
+        new executeButton().execute(username, password, host, command);
+        tv.append("\n\n");
     }
 
-    public void shell_exec(String cmd, TextView tv)
-    {
-        try
-        {
-            Process p=Runtime.getRuntime().exec(cmd);
-            BufferedReader b=new BufferedReader(new InputStreamReader(p.getInputStream()));
-            String line;
-            while((line=b.readLine())!=null)
-            {
-                tv.append("\n"+line);
-
+    @SuppressLint("StaticFieldLeak")
+    private class executeButton extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... strings) {
+            final String[] result = new String[1];
+            Resources res = getResources();
+            try {
+                result[0] = SSHCommand.executeRemoteCommand(strings[0], strings[1], strings[2], res.getInteger(R.integer.port), strings[3]);
+            } catch (ConnectException e) {
+                result[0] = "Failed to connect\n";
+            } catch (Exception e) {
+                result[0] = "SSH Failed\n";
             }
-        } catch(IOException e) {
-            throw new RuntimeException(e);
+            return result[0];
+        }
+
+        protected void onPostExecute(String result) {
+            TextView tv = findViewById(R.id.textHello);
+            tv.append(result);
         }
     }
+
 }

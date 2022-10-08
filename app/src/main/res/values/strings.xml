@@ -3,4 +3,5 @@
     <string name="right_button">Shutdown</string>
     <string name="left_button">Temp</string>
     <string name="clear_button">Clear</string>
+    <string name="disk_button">Disk space</string>
 </resources>
