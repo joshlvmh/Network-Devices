@@ -14,7 +14,8 @@ public class SSHCommand {
             String username,
             String password,
             String hostname,
-            int port) throws Exception {
+            int port,
+            String command) throws Exception {
         JSch jsch = new JSch();
         Session session = jsch.getSession(username, hostname, port);
         session.setPassword(password);
@@ -29,7 +30,7 @@ public class SSHCommand {
         // SSH Channel
         ChannelExec channel = (ChannelExec)
                 session.openChannel("exec");
-        channel.setCommand("reboot");
+        channel.setCommand(command);
 
         ByteArrayOutputStream outputBuffer = new ByteArrayOutputStream();
         ByteArrayOutputStream errorBuffer = new ByteArrayOutputStream();

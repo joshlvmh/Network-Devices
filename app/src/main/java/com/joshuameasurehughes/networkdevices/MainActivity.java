@@ -37,7 +37,31 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @SuppressLint("StaticFieldLeak")
-    public void onBtnClick (View view) throws RuntimeException {
+    public void onLeftClick (View view) throws RuntimeException {
+        String command = "./temp.sh";
+        buttonClick(view, command);
+    }
+
+    public void onRightClick (View view) {
+        String command = "sudo halt";
+        buttonClick(view, command);
+    }
+
+    public void clearScreen (View view) {
+        TextView tv = findViewById(R.id.textHello);
+        tv.setText("");
+        tv.scrollTo(0,0);
+
+        int pos = spinner.getSelectedItemPosition();
+        if (pos == 0) {
+            tv.setText("AP\n----------------\n");
+        }
+        else {
+            tv.setText("NAS\n----------------\n");
+        }
+    }
+
+    public void buttonClick (View view, String command) {
         TextView tv = findViewById(R.id.textHello);
         tv.setMovementMethod(ScrollingMovementMethod.getInstance());
 
@@ -69,13 +93,14 @@ public class MainActivity extends AppCompatActivity {
         String finalUsername = username;
         String finalPassword = password;
         String finalHost = host;
+
         new AsyncTask<Integer, Void, Void>() {
             @Override
             protected Void doInBackground(Integer... params) {
                 try {
                     //todo TAG
                     //Log.d(TAG,
-                    result[0] = SSHCommand.executeRemoteCommand(finalUsername, finalPassword, finalHost, res.getInteger(R.integer.port));
+                    result[0] = SSHCommand.executeRemoteCommand(finalUsername, finalPassword, finalHost, res.getInteger(R.integer.port), command);
                     runOnUiThread(() -> tv.append(result[0]));
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -83,20 +108,6 @@ public class MainActivity extends AppCompatActivity {
                 return null;
             }
         }.execute(1);
-    }
-
-    public void onClrClick (View view) {
-        TextView tv = findViewById(R.id.textHello);
-        tv.setText("");
-        tv.scrollTo(0,0);
-
-        int pos = spinner.getSelectedItemPosition();
-        if (pos == 0) {
-            tv.setText("AP\n----------------\n");
-        }
-        else {
-            tv.setText("NAS\n----------------\n");
-        }
     }
 
     public void shell_exec(String cmd, TextView tv)
